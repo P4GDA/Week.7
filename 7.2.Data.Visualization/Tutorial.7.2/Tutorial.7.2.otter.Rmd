@@ -1,0 +1,285 @@
+---
+title: "7.2 Data Visualization - Tutorial"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE)
+
+library(ottr)
+library(testthat)
+library(dplyr)
+library(ggplot2)
+```
+
+---
+
+At the end of this tutorial you should be able to:
+
+* Identify whether a column is categorical, discrete, or continuous
+* Create basic 1-D plots with ggplot: bar plots, histograms
+* Create basic 2-D plots with ggplot: scatter plots, box plots
+* Identify the correct type of plot to use in different situations
+* Add 1 or 2 extra categorical dimensions to plots
+* Add formatting to plots
+
+---
+
+## 7.2.1: Variable Types
+
+---
+
+In this tutorial, we will use data from the Pan-cancer analysis of whole genomes (ICGC/TCGA, Nature 2020). This data set includes patient tumor samples for X patients across X types of cancer. For each patient/sample, the sex, age of the patient at diagnosis, survival status, general cancer type, cancer subtype, "mutational burden", and "tobacco smoking intensity" is included. Mutational burden is the number of non-synonymous mutations per megabase. Tobacco smoking intensity is a measure of the patient's tobacco consumption (whole numbers on a scale of 0-100), the higher the number the greater the tobacco consumption.
+
+```{r}
+cancer_patient_data <- read.table("/home/jovyan/Week.7/7.2.Data.Visualization/Tutorial.7.2/cancer_patient_data_without_mutation_counts.txt", stringsAsFactors = FALSE, header=TRUE, sep="\t")
+cancer_patient_data
+```
+
+Investigate the columns in this data frame. Note that `sample.ID` and `patient.ID` are identifiers and thus are not categorical, continuous, or discrete.
+
+Create a vector called "categorical_columns" with the names of the categorical columns in the data frame. 
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.1.a.R")
+```
+**Check your answer by running the above block** 
+
+Create a vector called "discrete_columns" with the names of the discrete columns in the data frame. 
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.1.b.R")
+```
+**Check your answer by running the above block** 
+
+Create a vector called "continuous_columns" with the names of the continuous columns in the data frame. 
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.1.c.R")
+```
+**Check your answer by running the above block** 
+
+---
+
+## 7.2.3 The ggplot2 Package
+
+---
+
+This section will also test concepts from 7.2.2 Plot Types. The ggplot2 and dplyr packages have already been loaded for you.
+
+In the tutorial we will be assigning plots to variables to allow auto-grading. To see the plot you created output the variable name, for example:
+
+```{r}
+g <- ggplot(cancer_patient_data, aes(sex)) + geom_bar()
+g
+```
+
+Create a bar plot to show the number of patients who are living and deceased. Assign the plot to a variable called "patient_survival_status_plot". 
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.2.a.R")
+```
+**Check your answer by running the above block** 
+
+Create a histogram to show the patient ages. Choose the bin size so that patients are grouped by 5 year increments. Assign the plot to a variable called "patient_age_distribution". 
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.2.b.R")
+```
+**Check your answer by running the above block** 
+
+Create a scatter plot to compare patient age (x-axis) with mutational burden (y-axis). Assign the plot to a variable called "age_vs_mutational_burden".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.2.c.R")
+```
+**Check your answer by running the above block** 
+
+Notice that in general, younger patients have a lower mutational burden. This makes sense because there has been less time, and therefore fewer cell divisions, in their life in which mutations have had a chance to arise.
+
+---
+
+For the next portion of this tutorial we will look more specifically at breast cancer, the `cancer_type` value for breast cancer is "Breast Cancer". 
+Create a scatter plot to compare patient age (x-axis) with mutational burden (y-axis) for patients with breast cancer. Assign the plot to a variable called "age_vs_mutational_burden_breast_cancer".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.2.d.R")
+```
+**Check your answer by running the above block** 
+
+For breast cancer we can see that there is not a strong correlation between age and mutational burden. Let's investigate this further by looking at how the breast cancer subtype relates to mutational burden.
+
+Create a box plot to compare the cancer subtype (x-axis) with the mutational burden (y-axis) for patients with breast cancer. Assign the plot to a variable called "breast_cancer_subtype_mutational_burden".
+
+To make it easier to see the names of the breast cancer subtypes, which are very long and will overlap in the plot, add the following code to your plot 
+
+    theme(axis.text.x=element_text(angle=50, vjust=0.5))
+    
+This will put the x-axis names on an angle below the plot so you can see them easily.
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.2.e.R")
+```
+**Check your answer by running the above block** 
+
+Looking at this plot, invasive mixed mucinous carcinomas have the greatest median mutational burden. However, we cannot tell how many patients have each subtype of breast cancer, nor can we determine the significance of the difference. 
+
+We can use an unpaired t-test to see if there is a significant difference, the two groups are:
+- patients with "Breast Invasive Mixed Mucinous Carcinoma"
+- patients with "Breast Cancer" but not "Breast Invasive Mixed Mucinous Carcinoma"
+
+Assign the p-value of the t-test to a variable named "breast_t.test_p.val".
+```{r}
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.2.f.R")
+```
+**Check your answer by running the above block** 
+
+---
+
+## 7.2.4: Adding Dimensions
+
+---
+
+Now we will take a closer look at pancreatic cancer (`cancer_type` == "Pancreatic Cancer". 
+Create a side-by-side bar plot to view the number of patients per cancer subtype per survival status for patients with pancreatic cancer. Assign the plot to a variable called "pancreatic_cancer_subtype_survival". Add `theme(axis.text.x=element_text(angle=50, vjust=0.5))` again so you can view the long names. Hint: Use the fill aesthetic to plot the cancer subtypes by survival status.
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.a.R")
+```
+**Check your answer by running the above block** 
+
+Looking at this plot we can see that in this data set, a larger number of patients have pancreatic adenocarcinomas or pancreatic neuroendocrine tumors, and few have the other subtypes. We can also see that pancreatic adenocarcinomas are much more deadly than pancreatic neuroendocrine tumors in this dataset.
+
+Let's investigate these subtypes further. First, we will create a data frame containing only patients with these two subtypes of pancreatic cancer.
+
+```{r}
+pancreatic_cancer_main_subtypes <- filter(cancer_patient_data, cancer_subtype=="Pancreatic Adenocarcinoma" | cancer_subtype == "Pancreatic Neuroendocrine Tumor")
+```
+
+Create a box plot to compare the cancer subtype (x-axis) with the patient age (y-axis) for patients in `pancreatic_cancer_main_subtypes`. For each cancer subtype compare by survival status as well by using the fill aesthetic. Assign the plot to a variable called "pancreatic_subtypes_age_survival".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.b.R")
+```
+**Check your answer by running the above block** 
+
+For both cancer types, patient age is associated with survival status. We can also see that patients with pancreatic adenocarinomas tend to be older than patients with neuroendocrine tumors. Compare patient age with mutational burden for patients in `pancreatic_cancer_main_subtypes`. Colour the points based on the cancer subtype. Assign the plot to a variable called "pancreatic_subtypes_age_mutations_survival".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.c.R")
+```
+**Check your answer by running the above block** 
+
+This plot shows us many things, we can see that the mutational burden tends to be higher for patients with adenocarcinomas, and that age and mutational burden correlate.
+
+---
+
+The 5 most common cancer types in this data set are hepatobiliary cancer, pancreatic cancer, breast cancer, prostate cancer, and renal cell carcinoma. The data frame `most_common_cancers` contains the data only for patients with these cancer types.
+
+```{r}
+most_common_cancers <- filter(cancer_patient_data, cancer_type == "Hepatobiliary Cancer" | cancer_type == "Pancreatic Cancer" | cancer_type == "Breast Cancer" | cancer_type == "Prostate Cancer" | cancer_type == "Renal Cell Carcinoma")
+```
+
+Previously we saw that survival status was associated with patient age for pancreatic cancer patients. Investigate this across all 5 cancer types by creating a plot to visualize the age distribution of patients with the 5 most common cancers. Add a dimension to the plot to separate patients by survival status as well, via the fill aesthetic. Give the plot the title "Common Cancer Types: Age and Survival Status", give the legend the title "Survival Status", the x-axis label should read "Cancer Type" and the y-axis label should read "Patient Age at Diagnosis". Assign the plot to a variable called "age_and_survival".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.d.R")
+```
+**Check your answer by running the above block** 
+
+Based on the plot above, for most of these cancers, the median age at diagnosis for deceased patients is higher than that of living patients. The only cancer type for which this is not true is hepatobiliary cancer. 
+
+Investigate how tobacco smoking intensity relates to mutational burden in the most common cancer types. Plot tobacco smoking intensity vs mutational burden and colour points by survival status. Assign the plot to a variable called "tobacco_vs_mutations_survival".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.e.R")
+```
+**Check your answer by running the above block** 
+
+There are a number of issues with this plot:
+
+1. Due to the large amount of missing (NA) values in the tobacco smoking intensity column, the y axis is too large. The y-axis limits are set based on mutational burden values that were unable to be plotted due to the missing values. 
+
+2. The points are very small.
+
+3. Points overlap.
+
+Fix all of these issues with functions and aesthetics we learned in lectures and call the new plot "tobacco_vs_mutations_survival_2".
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.f.R")
+```
+**Check your answer by running the above block** 
+
+Create a plot called "tobacco_vs_mutations_survival_cancer_type" that is the same as the previous plot, but with point shapes distinguishing the different cancer types.
+```{r}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Tutorial.W7.2.4.g.R")
+```
+**Check your answer by running the above block** 
+
+---

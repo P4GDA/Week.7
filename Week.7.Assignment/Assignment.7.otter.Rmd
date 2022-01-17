@@ -1,0 +1,263 @@
+---
+title: "Week 7 Assignment"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE)
+
+library(ottr)
+library(testthat)
+library(dplyr)
+library(ggplot2)
+```
+
+---
+
+## Overview
+
+---
+
+This assignment covers the content in week 7 lectures and tutorials.
+
+#### Mark breakdown
+- Question 1 (10 marks)
+- Question 2 (11 marks)
+
+---
+
+## Background
+
+---
+
+This assignment will use data from 513 patients with lower grade glioma (LGG) from the TCGA Pan-Cancer Atlas, downloaded from: https://www.cbioportal.org/. LGG is a slow growing type of brain cancer that originates from two types of brain cells: astrocytes and oligodendrocytes. 
+
+```{r}
+LGG_pt_data <- read.table("/home/jovyan/Week.7/Week.7.Assignment/LGG_TCGA_data.txt", header=TRUE, stringsAsFactors = FALSE, sep="\t")
+LGG_pt_data
+```
+Description of data frame columns:
+
+*Sample.ID*             Unique identifier for each patient sample          
+*Diagnosis.Age*         Age of the patient when LGG was diagnosed
+*Sex*                   Patient Sex           
+*Buffa.Hypoxia.Score*   Score estimating the tumor hypoxia level
+*Months.of.Survival*    Number of months patient survived between diagnosis and death or the end of the study
+*Survival.Status*       Survival status of patient at the end of the study
+*Tumor.Type*            Type of LGG: Astrocytoma (originated in astrocytes), Oligodendroglioma (originated in oligodendrocytes), Oligoastrocytoma (mix of both astrocytes & oligodendrocytes)
+*IDH1.expression*       Expression level of IDH1 gene in the tumor
+*TP53.expression*       Expression level of TP53 gene in the tumor
+*EGFR.expression*       Expression level of EGFR gene in the tumor
+*SEC61G.expression*     Expression level of SEC61G gene in the tumor
+*CDKN2A.expression*     Expression level of CDKN2A gene in the tumor
+*CDKN2A.CNA*            Whether or not the patient has a CNA* affecting the CDKN2A gene
+
+*Copy Number Aberrations (CNAs) frequently occur in cancer, these CNAs are deletions or amplifications of large genomic segments, altering the expression of the genes affected by the CNA.
+
+---
+
+## QUESTIONS
+
+---
+
+### Question 1 
+
+#### a.
+(2 marks)
+Write a function called "colStats" that outputs a named vector containing the mean and standard deviation of a column in a data frame. The function should take two arguments (both required) in this order: a data frame, and a character value with a column name. This function should NOT use the built-in functions `mean()` or `sd()`, or any dplyr functions, but it can use any other built-in functions. 
+
+Use the following calculation for sample standard deviation (assuming `x` is vector of numbers, and `mean_x` is the mean of the values in `x`):
+
+    sqrt(sum((x - mean_x)^2)/(length(x)-1))
+    
+The following example shows how the `colStats()` function should be used and what it should return (the function call is preceded by a ">" for clarity):
+
+    > colStats(LGG_pt_data, "TP53.expression")
+         mean        sd 
+    1152.1072  576.8798 
+```{r Assignment.W7.1.a}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.1.a.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### b.
+(2 marks)
+Recreate the above function with error handling. This function should be called "colStats_error" and should return the same output. However, it should throw an error if:
+ - the column does not exist in the data frame
+ - the column contains non-numeric data 
+
+The following examples show the expected output of your `colStats_error()` function given different arguments (the function call is preceded by a ">" for clarity):
+
+    > colStats_error(LGG_pt_data, "TP53.expression")
+         mean        sd 
+    1152.1072  576.8798 
+
+    > colStats_error(LGG_pt_data, "RBFOX1.expression")
+    Error in colStats(LGG_pt_data, "RBFOX1.expression") : column name provided does not exist
+    
+    > colStats_error(LGG_pt_data, "Sex")
+    Error in colStats("Sex") : column contains non-numeric data
+```{r Assignment.W7.1.b}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.1.b.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### c.
+(6 marks)
+
+Five of the most commonly mutated genes in this data set of LGG patients are IDH1, TP53, EGFR, SEC61G, and CDKN2A.
+
+Write a function called "exprSummary". The function takes arguments to filter out a subset of patients in `LGG_pt_data` based on tumor type, and optionally based on survival status, and then returns a vector detailing the mean and standard deviation of one of the 5 genes (IDH1, TP53, EGFR, SEC61G, CDKN2A), as specified by a required argument, for this subset of patients.
+
+Hint: Call your `colStats_error()` function from within your `exprSummary()` function.
+
+The function should take three arguments and deal with the user input as described below:
+
+1. `tumor.type`
+  - Required
+  - Must be one of: "Astrocytoma", "Oligoastrocytoma", "Oligodendroglioma"
+  - If the provided argument value is not equal to one of the three possible tumor types, the function should throw an error with an appropriate error message.
+
+2. `gene`
+  - Required
+  - Must be one of: "IDH1", "TP53", "EGFR", "SEC61G", and "CDKN2A"
+  - If the provided argument value is not equal to one of the five possible genes, the function should throw an error with an appropriate error message.
+  - Hint: `paste("IDH1", "expression", sep=".")` will return `"IDH1.expression"`
+
+3. `survial.status` 
+  - Optional 
+  - Default value: "ALL" 
+  - Must be one of: "ALL", "LIVING", "DECEASED" 
+  - If the provided argument value is not equal to one of the three possible values, the function should output a warning with an appropriate warning message, set the value to "ALL" and continue to run.
+
+The following example arguments and output show the expected output of your function (the function call is preceded by a ">" for clarity):
+
+    > exprSummary("Astrocytoma", "IDH1")
+         mean        sd 
+    1835.4266  758.5985
+
+    > exprSummary("Oligodendroglioma", "EGFR", "DECEASED")
+        mean       sd 
+    5018.190 5149.425 
+
+    > exprSummary("OTHER", "IDH1")
+    Error in exprSummary("OTHER", "IDH1") : 
+      tumor.type must be one of: 'Astrocytoma', 'Oligoastrocytoma', 'Oligodendroglioma'
+  
+    > exprSummary("Oligodendroglioma", "RBFOX1")
+    Error in exprSummary("Oligodendroglioma", "RBFOX1") : 
+      gene must be one of: 'IDH1', 'TP53', 'EGFR', 'SEC61G', and 'CDKN2A'
+      
+    > exprSummary("Oligodendroglioma", "EGFR", "OTHER")
+        mean       sd
+    3407.338 3495.369
+    Warning message:
+    In exprSummary("Oligodendroglioma", "EGFR", "OTHER") :
+      survival.status must be one of: 'ALL', 'LIVING', 'DECEASED'. survival.status will be set to 'ALL'
+```{r Assignment.W7.1.c}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.1.c.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+--- 
+
+### Question 2
+
+#### a.
+(1 mark)
+Using plotting functions taught in class, create a plot to show the number of patients for each of the 3 tumor types. Assign the plot to a variable named "q.2.a".
+```{r Assignment.W7.2.a}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.2.a.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### b. 
+(1 mark)
+Using plotting functions taught in class, create a plot to show the distribution of IDH1 expression across all the patients with a bin width of 100. Assign the plot to a variable named "q.2.b".
+```{r Assignment.W7.2.b}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.2.b.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### c. 
+(2 marks)
+Hypoxic tumors tend to have a worse prognosis as they can be resistant to therapy. The Buffa hypoxia score estimates the hypoxia level in tumor tissues, a higher number indicating a higher level of hypoxia. 
+
+To examine the relationship between hypoxia and prognosis, plot the months of survival (x-axis) against the Buffa hypoxia score (y-axis). Add the following descriptive title to the plot: "Effect of Tumor Hypoxia on Patient Survival". Change the x and y labels so that they read "Months of Survival" and "Buffa Hypoxia Score". Assign the plot to a variable named "q.2.c". 
+```{r Assignment.W7.2.c}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.2.c.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### d.
+(2 marks)
+Copy Number Aberrations (CNAs) frequently occur in cancer, these CNAs are deletions or amplifications of large genomic segments, altering the expression of the genes affected by the CNA. A deletion will lead to a decrease in the expression of the affected genes, and an amplification will lead to an increase in the expression of the affected genes.
+
+One of the genes most commonly affected by a CNA in the LGG patient data set is CDKN2A. In this dataset, 55 patients have a CNA that involves CDKN2A (`CDKN2A.CNA == TRUE`), and the other 458 patients do not.
+
+Create a plot to compare the distribution of CDKN2A expression in patients that do and do not have a CNA that involves CDK2NA. Use the graph to determine whether the CNAs affecting CDKN2A lead to a deletion or amplification of the gene. Assign either the word "deletion" or "amplification" to a variable named "q.2.d" to answer this question.
+```{r Assignment.W7.2.d}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.2.d.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### e. 
+(2 marks)
+Do LGG patients with a CNA affecting CDKN2A have a worse outcome than patients who do not? Create a side-by-side bar plot that shows how many patients do and do not have a CNA affecting CDKN2A, and further split these counts by survival status. Assign the plot to a variable named "q.2.e".
+```{r Assignment.W7.2.e}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.2.e.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
+
+#### f. 
+(3 marks)
+Explore the relationship between age at diagnosis and cancer prognosis, plot the age at diagnosis (x-axis) against the months of survival (y-axis). Add the following descriptive title to the plot: "Diagnosis Age vs. Patient Survival". Change the x and y labels so that read "Diagnosis Age" and "Months of Survival". Colour each point based on the tumor type and change the legend title so that it reads "Tumor Type". Change the points so that they have 50% opacity. Assign the plot to a variable named "q.2.f". 
+```{r Assignment.W7.2.f}
+# Write and execute your code here
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/Assignment.W7.2.f.R")
+```
+**IGNORE the above block: test results will not appear in assignments** 
