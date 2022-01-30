@@ -10,10 +10,10 @@ test = list(
         expect_equal(pancreatic_subtypes_age_survival$data, filter(cancer_patient_data, cancer_subtype=="Pancreatic Adenocarcinoma" | cancer_subtype == "Pancreatic Neuroendocrine Tumor"))
         expect_equal(class(pancreatic_subtypes_age_survival$layers[[1]]$geom)[1], "GeomBoxplot")
         expect_equal(class(pancreatic_subtypes_age_survival$layers[[1]]$stat)[1], "StatBoxplot")
-        expect_true(any(grepl("cancer_subtype", pancreatic_subtypes_age_survival$mapping$x)))
-        expect_true(any(grepl("age", pancreatic_subtypes_age_survival$mapping$y)))
-        expect_true(any(grepl("survival_status", pancreatic_subtypes_age_survival$mapping$fill)) |
-                      any(grepl("fill", names(pancreatic_subtypes_age_survival$layers[[1]]$mapping))))
+        expect_equal("cancer_subtype", rlang::as_name(pancreatic_subtypes_age_survival$mapping$x))
+        expect_equal("age", rlang::as_name(pancreatic_subtypes_age_survival$mapping$y))
+        expect_true(any(grepl("survival_status", rlang::as_label(pancreatic_subtypes_age_survival$mapping$fill)),
+                        grepl("survival_status", rlang::as_label(pancreatic_subtypes_age_survival$layers[[1]]$mapping$fill))))
       }
     )
   )

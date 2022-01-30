@@ -10,7 +10,7 @@ test = list(
         expect_equal(patient_survival_status_plot$data, cancer_patient_data)
         expect_equal(class(patient_survival_status_plot$layers[[1]]$geom)[1], "GeomBar")
         expect_equal(class(patient_survival_status_plot$layers[[1]]$stat)[1], "StatCount")
-        expect_true(any(grepl("survival_status", patient_survival_status_plot$mapping$x)))
+        expect_equal("survival_status", rlang::as_name(patient_survival_status_plot$mapping$x))
       }
     )
   )

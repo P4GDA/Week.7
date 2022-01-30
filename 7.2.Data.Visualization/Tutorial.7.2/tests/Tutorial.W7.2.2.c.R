@@ -10,8 +10,8 @@ test = list(
         expect_equal(age_vs_mutational_burden$data, cancer_patient_data)
         expect_equal(class(age_vs_mutational_burden$layers[[1]]$geom)[1], "GeomPoint")
         expect_equal(class(age_vs_mutational_burden$layers[[1]]$stat)[1], "StatIdentity")
-        expect_true(any(grepl("age", age_vs_mutational_burden$mapping$x)))
-        expect_true(any(grepl("mutational_burden", age_vs_mutational_burden$mapping$y)))
+        expect_equal("age", rlang::as_name(age_vs_mutational_burden$mapping$x))
+        expect_equal("mutational_burden", rlang::as_name(age_vs_mutational_burden$mapping$y))
       }
     )
   )
