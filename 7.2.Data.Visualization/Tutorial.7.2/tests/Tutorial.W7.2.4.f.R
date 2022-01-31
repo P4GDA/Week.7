@@ -14,8 +14,14 @@ test = list(
         expect_equal("mutational_burden", rlang::as_name(tobacco_vs_mutations_survival_2$mapping$y))
         expect_true(any(grepl("survival_status", rlang::as_label(tobacco_vs_mutations_survival_2$mapping$colour)),
                         grepl("survival_status", rlang::as_label(tobacco_vs_mutations_survival_2$layers[[1]]$mapping))))
-        expect_false(is.null(tobacco_vs_mutations_survival_2$layers[[1]]$geom_params$size))
-        expect_false(is.null(tobacco_vs_mutations_survival_2$layers[[1]]$geom_params$alpha))
+        expect_true(any(!is.null(tobacco_vs_mutations_survival_2$layers[[1]]$geom_params$size),
+                         !is.null(tobacco_vs_mutations_survival_2$layers[[1]]$aes_params$size),
+                         !is.null(tobacco_vs_mutations_survival_2$layers[[1]]$mapping$size),
+                         !is.null(tobacco_vs_mutations_survival_2$mapping$size)))
+        expect_true(any(!is.null(tobacco_vs_mutations_survival_2$layers[[1]]$geom_params$alpha),
+                         !is.null(tobacco_vs_mutations_survival_2$layers[[1]]$aes_params$alpha),
+                         !is.null(tobacco_vs_mutations_survival_2$layers[[1]]$mapping$alpha),
+                         !is.null(tobacco_vs_mutations_survival_2$mapping$alpha)))
         expect_false(is.null(ggplot_build(tobacco_vs_mutations_survival_2)$layout$panel_params[[1]]$y.sec$scale$limits))
       }
     )

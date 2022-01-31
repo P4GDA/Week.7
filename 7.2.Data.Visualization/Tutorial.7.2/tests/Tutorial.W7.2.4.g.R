@@ -12,12 +12,18 @@ test = list(
         expect_equal(class(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$stat)[1], "StatIdentity")
         expect_equal("tobacco_smoking_intensity", rlang::as_name(tobacco_vs_mutations_survival_cancer_type$mapping$x))
         expect_equal("mutational_burden", rlang::as_name(tobacco_vs_mutations_survival_cancer_type$mapping$y))
-        expect_false(is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$geom_params$size))
-        expect_false(is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$geom_params$alpha))
         expect_true(any(grepl("survival_status", rlang::as_label(tobacco_vs_mutations_survival_cancer_type$mapping$colour)),
                         grepl("survival_status", rlang::as_label(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$mapping$colour))))
         expect_true(any(grepl("cancer_type", rlang::as_label(tobacco_vs_mutations_survival_cancer_type$mapping$shape)),
                         grepl("cancer_type", rlang::as_label(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$mapping$shape))))
+        expect_true(any(!is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$geom_params$size),
+                         !is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$aes_params$size),
+                         !is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$mapping$size),
+                         !is.null(tobacco_vs_mutations_survival_cancer_type$mapping$size)))
+        expect_true(any(!is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$geom_params$alpha),
+                         !is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$aes_params$alpha),
+                         !is.null(tobacco_vs_mutations_survival_cancer_type$layers[[1]]$mapping$alpha),
+                         !is.null(tobacco_vs_mutations_survival_cancer_type$mapping$alpha)))
       }
     )
   )
