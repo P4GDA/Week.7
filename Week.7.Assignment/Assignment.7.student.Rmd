@@ -77,7 +77,7 @@ The following example shows how the `colStats()` function should be used and wha
     1152.1072  576.8798 
 ```{r Assignment.W7.1.a}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -104,7 +104,7 @@ The following examples show the expected output of your `colStats_error()` funct
     Error in colStats("Sex") : column contains non-numeric data
 ```{r Assignment.W7.1.b}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -166,7 +166,7 @@ The following example arguments and output show the expected output of your func
       survival.status must be one of: 'ALL', 'LIVING', 'DECEASED'. survival.status will be set to 'ALL'
 ```{r Assignment.W7.1.c}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -183,7 +183,7 @@ The following example arguments and output show the expected output of your func
 Using plotting functions taught in class, create a plot to show the number of patients for each of the 3 tumor types. Assign the plot to a variable named "q.2.a".
 ```{r Assignment.W7.2.a}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -196,7 +196,7 @@ Using plotting functions taught in class, create a plot to show the number of pa
 Using plotting functions taught in class, create a plot to show the distribution of IDH1 expression across all the patients with a bin width of 100. Assign the plot to a variable named "q.2.b".
 ```{r Assignment.W7.2.b}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -211,7 +211,7 @@ Hypoxic tumors tend to have a worse prognosis as they can be resistant to therap
 To examine the relationship between hypoxia and prognosis, plot the months of survival (x-axis) against the Buffa hypoxia score (y-axis). Add the following descriptive title to the plot: "Effect of Tumor Hypoxia on Patient Survival". Change the x and y labels so that they read "Months of Survival" and "Buffa Hypoxia Score". Assign the plot to a variable named "q.2.c". 
 ```{r Assignment.W7.2.c}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -228,7 +228,7 @@ One of the genes most commonly affected by a CNA in the LGG patient data set is 
 Create a plot to compare the distribution of CDKN2A expression in patients that do and do not have a CNA that involves CDK2NA. Use the graph to determine whether the CNAs affecting CDKN2A lead to a deletion or amplification of the gene. Assign either the word "deletion" or "amplification" to a variable named "q.2.d" to answer this question.
 ```{r Assignment.W7.2.d}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -241,7 +241,7 @@ Create a plot to compare the distribution of CDKN2A expression in patients that 
 Do LGG patients with a CNA affecting CDKN2A have a worse outcome than patients who do not? Create a side-by-side bar plot that shows how many patients do and do not have a CNA affecting CDKN2A, and further split these counts by survival status. Assign the plot to a variable named "q.2.e".
 ```{r Assignment.W7.2.e}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
@@ -254,7 +254,7 @@ Do LGG patients with a CNA affecting CDKN2A have a worse outcome than patients w
 Explore the relationship between age at diagnosis and cancer prognosis, plot the age at diagnosis (x-axis) against the months of survival (y-axis). Add the following descriptive title to the plot: "Diagnosis Age vs. Patient Survival". Change the x and y labels so that read "Diagnosis Age" and "Months of Survival". Colour each point based on the tumor type and change the legend title so that it reads "Tumor Type". Change the points so that they have 50% opacity. Assign the plot to a variable named "q.2.f". 
 ```{r Assignment.W7.2.f}
 # Write and execute your code here
-# YOUR CODE HERE
+
 ```
 
 ```{r}
