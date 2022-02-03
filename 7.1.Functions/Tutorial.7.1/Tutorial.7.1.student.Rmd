@@ -205,7 +205,7 @@ DNA.sequence <- "CGTATCGGCTATGCCTAGCACCG"
 ```
 **Check your answer by running the above block** 
 
-Call your `is_seq2()` function using so that it will return FALSE and output a warning. Assign the function output to a variable called "is_seq2_FALSE_warning":
+Call your `is_seq2()` function using arguments that will return FALSE and output a warning. Assign the function output to a variable called "is_seq2_FALSE_warning":
 
 ```{r}
 # Write and execute your code here
