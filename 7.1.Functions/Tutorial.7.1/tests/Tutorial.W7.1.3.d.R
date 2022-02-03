@@ -6,8 +6,8 @@ test = list(
       name = NA,
       points = 1.0,
       code = {
-        expect_false(is.seq_FALSE)
-        expect_false(is.seq("CGTATCGGCTATGCCTAGCACCG", seq.type="RNA"))
+        expect_false(is_seq2_FALSE_warning)
+        expect_warning(is_seq2(1, seq.type="RNA"))
       }
     )
   )

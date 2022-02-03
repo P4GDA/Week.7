@@ -6,10 +6,8 @@ test = list(
       name = NA,
       points = 1.0,
       code = {
-        expect_true(is.seq("CATCATCAT"))
-        expect_true(is.seq("CAUCAUCAU", seq.type="RNA"))
-        expect_true(is.seq("CACACA"))
-        expect_true(is.seq("CACACA", seq.type="RNA"))
+        expect_false(is_seq2_FALSE)
+        expect_false(is_seq2("CGTATCGGCTATGCCTAGCACCG", seq.type="RNA"))
       }
     )
   )

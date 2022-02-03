@@ -6,8 +6,8 @@ test = list(
       name = NA,
       points = 1.0,
       code = {
-        expect_false(is.seq_FALSE_warning)
-        expect_warning(is.seq(1, seq.type="RNA"))
+        expect_false(exists("is_seq2_error"))
+        expect_error(is_seq2("ABCD", seq.type="amino acid"))
       }
     )
   )

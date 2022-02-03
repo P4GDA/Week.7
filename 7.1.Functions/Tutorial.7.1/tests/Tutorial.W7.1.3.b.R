@@ -6,12 +6,15 @@ test = list(
       name = NA,
       points = 1.0,
       code = {
-        expect_equal(most.mutated.gene.2(cancer.type="Hepatobiliary Cancer", choose.sex="Male"), "CTNNB1")
-        expect_warning(most.mutated.gene.2(cancer.type="Hepatobiliary Cancer", choose.sex="male"))
-        expect_equal(most.mutated.gene.2(cancer.type="Hepatobiliary Cancer", choose.sex="male"), "TP53")
-        expect_error(most.mutated.gene.2(cancer.type="Esophagogastric Cancer", age.range=40))
-        expect_warning(most.mutated.gene.2(cancer.type="Esophagogastric Cancer", age.range=c(40,0)))
-        expect_equal(most.mutated.gene.2(cancer.type="Esophagogastric Cancer", age.range=c(40,0)), "LRP1B")
+        expect_true(all(is_seq2("CATCATCAT"), 
+                        is_seq2("CAUCAUCAU", seq.type="RNA"),
+                        is_seq2("CACACA"),
+                        is_seq2("CACACA", seq.type="RNA")))
+        expect_false(TRUE %in% c(is_seq2("CATCATCAT", seq.type="RNA"),
+                                 is_seq2("CAUCAUCAU")))
+        expect_warning(is_seq2(7))
+        expect_false(is_seq2(7))
+        expect_error(is_seq2("ATG", seq.type="amino"))
       }
     )
   )
