@@ -1,1 +1,382 @@
-placeholder
+---
+title: "7.1 Function Creation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE, message = TRUE, include=TRUE)
+```
+
+---
+
+## 7.1.1: Function Creation Basics
+
+---
+
+### Function Creation Syntax
+
+A function is a set of pre-determined instructions that carries out a specific task.
+
+Functions:
+- take input values (arguments)
+- run a series of commands using the input values
+- output the result (return value)
+
+    function_name(arguments)
+    [1] return_value
+
+We have been using several built-in functions throughout the course. Although built-in functions are able to perform many of the tasks we need in data analysis, there will be times when there is no existing function for the task you must perform. In these situations you will need to write your owncode to perform the task. If it is a task you will need to perform many times, instead of copying and pasting your code you can write a function. 
+
+To create your a function in R, we use the `function()` function, which has the following syntax:
+
+    function_name <- function(arguments) {
+      ... code ...
+      return(return_value)
+    }
+
+To a function name, you assign the output of the `function()` function. You can provide arguments, write the necessary code to carry out the task that the function will perform, and then return the value the function produces using the `return()` function.
+
+Important notes about creating functions:
+- Function names and argument names should be descriptive
+- The `return_value` can be any R data structure (vector, matrix, etc.)
+- The `function()` function must be executed before the function can be used
+
+---
+
+### Creating a Function
+
+To get a better idea of how to create a function, let's recreate R's `mean()` function. 
+
+We will call our function "my_mean_function" and it will take one argument `x`, which will be a numeric vector. It is good practice whenever you write a function to put a comment at the top, within the curly braces, to describe what the function does and what the arguments are. This way, when you go back to use the function later on, you will not have to read the code to figure out what it does. 
+
+To calculate the mean of a numeric vector, we need to calculate the sum of all the numbers in the vector, which we can do with the `sum()` function, and divide it by the number of elements, which we can determine with the `length()` function. Existing built-in functions or functions you have already created can be used within other functions.
+
+The last line of the function should return the mean of the vector `x`. To do this we place the variable containing the mean within the `return()` function:
+
+```{r}
+my_mean_function <- function(x) {
+# my_mean_function calculates the mean of vector x
+mean_x <- sum(x)/length(x)
+return(mean_x)
+}
+```
+
+In order to use our function, we must first execute the code block that creates the function, and then it can be applied. Let's apply it to the values 0 through 100:
+
+```{r}
+my_mean_function(0:100)
+```
+
+Within the `my_mean_function()` function, the variable `mean_x` is created and returned. What do you think will be output if we run the code below?
+
+```{r}
+mean_x
+```
+
+It throws an error. This is because variables assigned *within* a function do not exist *outside* of the function.
+
+---
+
+## 7.1.2: Function Arguments
+
+---
+
+### Steps for Designing a Function
+
+When designing a function there are three key steps:
+
+1. Identify task
+2. Determine how to perform task
+3. Identify the necessary arguments
+
+We will design a function to analyze data in the brain tissue expression dataset sourced from the Human Protein Atlas (https://www.proteinatlas.org/humanproteome/brain). Each of the rows represents one of 15,271 genes. The first column is Ensembl Gene ID of each gene, which is a unique gene identifier. We will learn more about Ensembl Gene IDs later on in the course. The second to eleventh columns contain normalized gene expression values for 10 different brain tissues. 
+
+```{r}
+brain_expression <- read.csv("/home/jovyan/Week.7/7.1.Function.Creation/brain_expression.csv", stringsAsFactors = FALSE)
+brain_expression
+```
+
+We will write a function to determine the percentage of genes expressed given a vector of expression values. We will define a gene as expressed if the expression level is greater than or equal to 1. 
+
+1. Identify task
+    Find the percentage of genes expressed (expression level > 1) in a vector of expression values.
+2. Determine how to perform task
+    For a vector of expression values `x`
+    Identify the number of genes expressed: `num_expr <- length(which(x > 1))`
+    Identify the total number of genes: `total_genes <- length(x)`
+    Calculate the percentage of expressed genes: `percent <- round(100*num_expr/total_genes, 2)`
+3. Identify the necessary arguments
+    `x`: All values can be derived from the vector of expression values `x`
+
+Now we can write our function. We will name the function "percent_expressed" and our single argument "expr":
+
+```{r}
+percent_expressed <- function(expr) {
+  # Finds the percent of genes expressed (expression level > 1) in a vector of expression values
+  num_expr <- length(which(expr > 1))
+  total_genes <- length(expr)
+  percent <- round(100*num_expr/total_genes, 2)
+  return(percent)
+}
+```
+
+We can test out our function with the thalamus column of the `brain_expression` data frame: 
+
+```{r}
+percent_expressed(brain_expression$thalamus)
+```
+
+84.85% of the genes in the data frame are expressed in the thalamus.
+
+---
+
+### Multiple & Default Arguments
+
+The function `percent_expressed` can be used with any set of expression values. Not only will it work for the columns from `brain_expression`, but it will work for any set of expression values, including a dataset with a different number of genes. However, the function is only useful for datasets where a value of 1 is considered to be the threshold for a gene to be considered expressed. This threshold may differ depending on the analysis.
+
+We can increase the usefulness of this function by adding a second argument, called "threshold". This argument will be the threshold used to consider a gene expressed. 
+
+The function below is the same as the previous `percent_expressed`, however it now has a second argument and the code `expr > 1` has been replaced with a more generic `expr > threshold`:
+
+```{r}
+percent_expressed <- function(expr, threshold) {
+# Finds the percent of genes expressed > threshold in a vector of expression values
+  num_expr <- length(which(expr > threshold))
+  total_genes <- length(expr)
+  percent <- round(100*num_expr/total_genes, 2)
+  return(percent)
+}
+```
+
+What percentage of the genes in the data frame are expressed in the thalamus with an expression level > 2?
+
+```{r}
+percent_expressed(brain_expression$thalamus, 2)
+```
+
+So far we have only created functions with required arguments, but we can also create functions with optional arguments. We can change the argument `threshold` in our `percent_expressed` function to be an optional argument by providing the argument with a *default value*. We will set the default value for `threshold` to be 1:
+
+```{r}
+percent_expressed <- function(expr, threshold=1) {
+  # Finds the percent of genes expressed > threshold (default = 1) in a vector of expression values
+  num_expr <- length(which(expr > threshold))
+  total_genes <- length(expr)
+  percent <- round(100*num_expr/total_genes, 2)
+  return(percent)
+}
+```
+
+Now if we run `percent_expressed` without assigning a value to `threshold`, it returns the percentage of genes expressed above one: 
+
+```{r}
+percent_expressed(brain_expression$thalamus)
+```
+
+Or if we want to use a different threshold, we can alter the `threshold` argument when we call the function: 
+
+```{r}
+percent_expressed(brain_expression$thalamus, 2)
+```
+
+---
+
+## 7.1.3: Function Testing
+
+---
+
+The RNA sequence AUGGCAUUC is 9 bases long and contains 3 codons: AUG, GCA, and UUC. How could we write a function to extract codons from an RNA sequence?
+
+The function "get_codons" will take a single argument "RNA_seq" that is a character value containing an RNA sequence. It will return a character vector with each of the codons as an element. To collect the codons, we can start our function with an empty vector "codons" that will be returned at the end of the function.
+
+To get each codon, we will need the function to go through the RNA sequence and extract bases 1-3, 4-6, 7-9, etc. until the end of the RNA sequence is reached. To do this we can set up a while loop to extract the codons and add them to the vector.
+
+Reminder: `substr()` will extract the letters in a character value from a start position to an end position:
+
+```{r}
+get_codons <- function(RNA_seq) {
+# Return a vector of codons from an RNA sequence
+  codons <- c()
+  b1 <- 1
+  b3 <- 3
+  while (b3 <= nchar(RNA_seq)) {
+    codons <- c(codons, substr(RNA_seq, b1, b3))
+    b1 <- b1 + 3
+    b3 <- b3 + 3
+  }
+  return(codons)
+}
+```
+
+AUGGCAUUC is 9 bases long and contains 3 codons: AUG, GCA, and UUC. Does the function work?
+
+```{r}
+get_codons("AUGGCAUUC")
+```
+
+This is called *function testing*: providing arguments for which we know the expected outcome and checking that the return value is correct. Above we gave it an RNA sequence and checked if the three codons it contained were returned as expected.
+
+It's also important to check how a function behaves with unexpected input. What if we used the function on an RNA sequence with a length that is not a multiple of three?
+
+The sequence AUGCCUGAUCGAU is 13 bases long. It contains 4 full codons: AUG, CCU, GAU, and CGA, as well as a partial codon at then end: U.
+
+```{r}
+get_codons("AUGCCUGAUCGAU")
+```
+
+The 4 full codons are returned, but the final U is not returned. This is because the while loop works with sets of three letters.
+
+What if we give our function a character value that isn't an RNA sequence? 
+
+```{r}
+get_codons("HELLOWORLD")
+```
+
+It returns each three letter subsequence within the character value. Our function does not have the information to know whether the argument is an RNA sequence and thus will treat all character values as RNA sequences. 
+
+---
+
+### Warning Messages
+
+R outputs a *warning message* when a piece of code runs, but there is a condition that may cause a problem. For example, in the code below, the number 1 was put in row 4 column 2 because it ran out of numbers in `1:7`.
+
+```{r}
+matrix(1:7, ncol=2)
+```
+
+We can also issue warnings from functions that we create. Our function `get_codons()` returns all full codons in an RNA sequence, but does not output any extra bases at the end. We can issue a warning in our function to alert the user about the output. 
+
+A warning is issued with the `warning()` function. It takes a warning message as an argument. A warning message does NOT stop the rest of the function from running, it only informs the user that something may be wrong.
+
+How can we issue the warning in our `get_codons()` function? We will need to issue the warning any time the number of bases in the RNA sequence is not divisible by three. 
+
+The modulo operator (`%%`) returns the remainder after division. If a number N is divisible by three, then `N %% 3 == 0` since there is no remainder.
+
+At the beginning of the function, we can check if the number of bases is divisible by three, and if not, output the warning: "number of bases in RNA_seq is not a multiple of 3; only full codons are returned":
+
+```{r}
+get_codons <- function(RNA_seq) {
+# Return a vector of codons from an RNA sequence
+  if (nchar(RNA_seq) %% 3 != 0) {
+    warning("number of bases in RNA_seq is not a multiple of 3; only full codons are returned")
+  }
+  codons <- c()
+  b1 <- 1
+  b3 <- 3
+  while (b3 <= nchar(RNA_seq)) {
+    codons <- c(codons, substr(RNA_seq, b1, b3))
+    b1 <- b1 + 3
+    b3 <- b3 + 3
+  }
+  return(codons)
+}
+```
+
+Now let's test the function on an RNA sequence with 13 bases:
+
+```{r}
+get_codons("AUGCCUGAUCGAU") 
+```
+
+The four full codons are returned along with the warning message.
+
+Note that the warning messages in R Markdown may appear in a slightly different format to how they were presented in lecture.
+
+---
+
+### Error Messages
+
+Let's practice writing functions by creating another function. This function will be called "is_RNA_seq" and it will check if a character value "seq" is an RNA sequence. 
+
+The function uses conditional statements to first check if the "seq" argument is a character value. If it is not a character value, the function immediately returns `FALSE` since it cannot be an RNA sequence. 
+
+Next, the function splits the character value into individual letters using `strsplit()`. If not all bases are equal to A, C, G, or U, the function returns `FALSE`; otherwise it returns `TRUE`: 
+
+```{r}
+is_RNA_seq <- function(seq) {
+  # The function is_RNA_seq() takes a value "seq" and outputs TRUE if "seq" is
+  # an RNA sequence and FALSE otherwise
+  if (!is.character(seq)) {
+    return(FALSE)
+  }
+  bases <- strsplit(seq, "")[[1]]
+  if (! all(bases == "A" | bases == "C" | bases == "G" | bases == "U")) {
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
+}
+```
+
+Now that we have created a function we should test it to ensure it outputs the expected logical value.
+
+RNA sequence:
+
+```{r}
+is_RNA_seq("AUGCCUGAUCGAU")
+```
+
+Partial RNA sequence:
+
+```{r}
+is_RNA_seq("HELLOACUAGCCGAU")
+```
+
+DNA sequence:
+
+```{r}
+is_RNA_seq("ATACTCAGGCTA")
+```
+
+Numeric value: 
+
+```{r}
+is_RNA_seq(17)
+```
+
+Along with adding warning messages to our functions we can also add *error messages*. 
+A error is thrown with the `stop()` function. It takes an error message as an argument. Unlike a warning, an error DOES stop the rest of the function from running.
+
+Because our `get_codons()` function is intended to be used with RNA sequences, we can use the `is_RNA_seq()` function to check if the `RNA_seq` argument in `get_codons()` is an RNA sequence, and if not we can throw an error:
+
+```{r}
+get_codons <- function(RNA_seq) {
+# Return a vector of codons from an RNA sequence
+  if (!is_RNA_seq(RNA_seq)) {
+    stop("argument provided is not an RNA sequence")
+  }
+  if (nchar(RNA_seq) %% 3 != 0) {
+    warning("number of bases in RNA_seq is not a multiple of 3; only full codons are returned")
+  }
+  codons <- c()
+  b1 <- 1
+  b3 <- 3
+  while (b3 <= nchar(RNA_seq)) {
+    codons <- c(codons, substr(RNA_seq, b1, b3))
+    b1 <- b1 + 3
+    b3 <- b3 + 3
+  }
+  return(codons)
+}
+```
+
+Let's test our final `get_codons()` function.
+
+Non-RNA sequence:
+
+```{r}
+get_codons("HELLOWORLD")
+```
+
+RNA sequence with an incomplete codon:
+
+```{r}
+get_codons("AUGCGAGUAUCGG")
+```
+
+RNA sequence with complete codons:
+
+```{r}
+get_codons("AUGCGAUAUCGG")
+```
+
+---
