@@ -1,382 +1,428 @@
 ---
-title: "7.1 Function Creation"
+title: "7.2 Data Visualization"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE, message = TRUE, include=TRUE)
+knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE)
 ```
 
 ---
 
-## 7.1.1: Function Creation Basics
+## 7.2.1: Variable Types
 
 ---
 
-### Function Creation Syntax
+### Bee Fertility Data
 
-A function is a set of pre-determined instructions that carries out a specific task.
+In this section we will be working with a data set from the following paper: 
 
-Functions:
-- take input values (arguments)
-- run a series of commands using the input values
-- output the result (return value)
+Stuligross, C., & Williams, N. M. (2020). *Pesticide and resource stressors additively impair wild bee reproduction.* Proceedings. Biological sciences, 287(1935)
 
-    function_name(arguments)
-    [1] return_value
+Stuligross & Williams look at the effect of pesticides and food resource stress on the fertility of bees. Bees lived in large flight cages with either a high or low density of wildflowers (in this data set this is referred to as "resources"), and the wildflowers were either treated or not treated with the pesticide imidacloprid. The number of offspring of the female bees was counted, along with the number of days they nested (i.e., days the bees actively produced offspring), and the intertegular span of female offspring (a measurement of the length between wings as a proxy for bee size). 
 
-We have been using several built-in functions throughout the course. Although built-in functions are able to perform many of the tasks we need in data analysis, there will be times when there is no existing function for the task you must perform. In these situations you will need to write your owncode to perform the task. If it is a task you will need to perform many times, instead of copying and pasting your code you can write a function. 
-
-To create your a function in R, we use the `function()` function, which has the following syntax:
-
-    function_name <- function(arguments) {
-      ... code ...
-      return(return_value)
-    }
-
-To a function name, you assign the output of the `function()` function. You can provide arguments, write the necessary code to carry out the task that the function will perform, and then return the value the function produces using the `return()` function.
-
-Important notes about creating functions:
-- Function names and argument names should be descriptive
-- The `return_value` can be any R data structure (vector, matrix, etc.)
-- The `function()` function must be executed before the function can be used
-
----
-
-### Creating a Function
-
-To get a better idea of how to create a function, let's recreate R's `mean()` function. 
-
-We will call our function "my_mean_function" and it will take one argument `x`, which will be a numeric vector. It is good practice whenever you write a function to put a comment at the top, within the curly braces, to describe what the function does and what the arguments are. This way, when you go back to use the function later on, you will not have to read the code to figure out what it does. 
-
-To calculate the mean of a numeric vector, we need to calculate the sum of all the numbers in the vector, which we can do with the `sum()` function, and divide it by the number of elements, which we can determine with the `length()` function. Existing built-in functions or functions you have already created can be used within other functions.
-
-The last line of the function should return the mean of the vector `x`. To do this we place the variable containing the mean within the `return()` function:
+This dataset contains information for about 150 female bees. Columns are:
+- `beeID`: a unique identifier for each female bee
+- `cage`: the numeric identifier of the cage the bee lived in
+- `pesticide`: whether wildflowers in cage were treated with pesticide ("treated" or "not treated")
+- `resources`: density of wildflowers in cage ("high" or "low")
+- `total.offspring`: number of offspring produced by bee
+- `total.nesting.days`: number of days 
+- `ITS`: intertegular span in centimetres
 
 ```{r}
-my_mean_function <- function(x) {
-# my_mean_function calculates the mean of vector x
-mean_x <- sum(x)/length(x)
-return(mean_x)
-}
-```
-
-In order to use our function, we must first execute the code block that creates the function, and then it can be applied. Let's apply it to the values 0 through 100:
-
-```{r}
-my_mean_function(0:100)
-```
-
-Within the `my_mean_function()` function, the variable `mean_x` is created and returned. What do you think will be output if we run the code below?
-
-```{r}
-mean_x
-```
-
-It throws an error. This is because variables assigned *within* a function do not exist *outside* of the function.
-
----
-
-## 7.1.2: Function Arguments
-
----
-
-### Steps for Designing a Function
-
-When designing a function there are three key steps:
-
-1. Identify task
-2. Determine how to perform task
-3. Identify the necessary arguments
-
-We will design a function to analyze data in the brain tissue expression dataset sourced from the Human Protein Atlas (https://www.proteinatlas.org/humanproteome/brain). Each of the rows represents one of 15,271 genes. The first column is Ensembl Gene ID of each gene, which is a unique gene identifier. We will learn more about Ensembl Gene IDs later on in the course. The second to eleventh columns contain normalized gene expression values for 10 different brain tissues. 
-
-```{r}
-brain_expression <- read.csv("/home/jovyan/Week.7/7.1.Function.Creation/brain_expression.csv", stringsAsFactors = FALSE)
-brain_expression
-```
-
-We will write a function to determine the percentage of genes expressed given a vector of expression values. We will define a gene as expressed if the expression level is greater than or equal to 1. 
-
-1. Identify task
-    Find the percentage of genes expressed (expression level > 1) in a vector of expression values.
-2. Determine how to perform task
-    For a vector of expression values `x`
-    Identify the number of genes expressed: `num_expr <- length(which(x > 1))`
-    Identify the total number of genes: `total_genes <- length(x)`
-    Calculate the percentage of expressed genes: `percent <- round(100*num_expr/total_genes, 2)`
-3. Identify the necessary arguments
-    `x`: All values can be derived from the vector of expression values `x`
-
-Now we can write our function. We will name the function "percent_expressed" and our single argument "expr":
-
-```{r}
-percent_expressed <- function(expr) {
-  # Finds the percent of genes expressed (expression level > 1) in a vector of expression values
-  num_expr <- length(which(expr > 1))
-  total_genes <- length(expr)
-  percent <- round(100*num_expr/total_genes, 2)
-  return(percent)
-}
-```
-
-We can test out our function with the thalamus column of the `brain_expression` data frame: 
-
-```{r}
-percent_expressed(brain_expression$thalamus)
-```
-
-84.85% of the genes in the data frame are expressed in the thalamus.
-
----
-
-### Multiple & Default Arguments
-
-The function `percent_expressed` can be used with any set of expression values. Not only will it work for the columns from `brain_expression`, but it will work for any set of expression values, including a dataset with a different number of genes. However, the function is only useful for datasets where a value of 1 is considered to be the threshold for a gene to be considered expressed. This threshold may differ depending on the analysis.
-
-We can increase the usefulness of this function by adding a second argument, called "threshold". This argument will be the threshold used to consider a gene expressed. 
-
-The function below is the same as the previous `percent_expressed`, however it now has a second argument and the code `expr > 1` has been replaced with a more generic `expr > threshold`:
-
-```{r}
-percent_expressed <- function(expr, threshold) {
-# Finds the percent of genes expressed > threshold in a vector of expression values
-  num_expr <- length(which(expr > threshold))
-  total_genes <- length(expr)
-  percent <- round(100*num_expr/total_genes, 2)
-  return(percent)
-}
-```
-
-What percentage of the genes in the data frame are expressed in the thalamus with an expression level > 2?
-
-```{r}
-percent_expressed(brain_expression$thalamus, 2)
-```
-
-So far we have only created functions with required arguments, but we can also create functions with optional arguments. We can change the argument `threshold` in our `percent_expressed` function to be an optional argument by providing the argument with a *default value*. We will set the default value for `threshold` to be 1:
-
-```{r}
-percent_expressed <- function(expr, threshold=1) {
-  # Finds the percent of genes expressed > threshold (default = 1) in a vector of expression values
-  num_expr <- length(which(expr > threshold))
-  total_genes <- length(expr)
-  percent <- round(100*num_expr/total_genes, 2)
-  return(percent)
-}
-```
-
-Now if we run `percent_expressed` without assigning a value to `threshold`, it returns the percentage of genes expressed above one: 
-
-```{r}
-percent_expressed(brain_expression$thalamus)
-```
-
-Or if we want to use a different threshold, we can alter the `threshold` argument when we call the function: 
-
-```{r}
-percent_expressed(brain_expression$thalamus, 2)
+bee_fertility <- read.csv("/home/jovyan/Week.7/7.2.Data.Visualization/bee_fertility_data.csv", stringsAsFactors = FALSE)
+bee_fertility
 ```
 
 ---
 
-## 7.1.3: Function Testing
+### Variable Types
+
+*Categorical variables*
+
+Categorical variables have a finite number of values. A categorical value defines the category (group) that each item belongs to. In a data frame, columns containing categorical variables can be logical, character, or numeric type values. All logical type columns are categorical variables since there are only two distinct options. 
+
+To determine if a character or numeric value is categorical, check if there is finite set of values that the variable can take. These values should be repeated multiple times.
+
+We can use the `group_by()` and `summarise()` functions from the `dplyr` package to check: 
+
+```{r}
+library(dplyr)
+bee_fertility %>% group_by(pesticide) %>% summarise(n=n())
+```
+
+We can see there are two possible values for `pesticide` and the number of rows that have each value.
+
+Three columns in the `bee_fertility` data set are categorical variables:
+- `cage`: the numeric identifier of the cage the bee lived in
+- `pesticide`: whether wildflowers in the cage were treated with pesticide ("treated" or "not treated")
+- `resources`: density of wildflowers in cage ("high" or "low")
+
+Note that `cage` is a categorical variable because the numbers indicate which cage the bee is in; i.e., they indicate groups. The order of the numbers does not matter and the magnitude of the values has no meaning. To determine if numeric value is categorical, consider whether you could change the numbers to letters without losing any information.
+
+*Discrete variables*
+
+Discrete variables have a countable number of possible values (between a minimum and maximum value). In a data frame, columns containing discrete variables are always numeric type.
+
+Two columns in the `bee_fertility` data set are discrete variables:
+- `total.offspring`: number of offspring produced by bee
+- `total.nesting.days`: number of days 
+
+Both of these values must be whole natural numbers; a bee cannot produce 8.4282 offspring, thus it is a countable numeric value. Unlike the cage number, these numeric values are measurements and have meaning.
+
+*Continuous variables*
+
+Continuous variables have an infinite number of possible values (between a minimum and maximum value). In a data frame, columns containing continuous variables are always numeric type. 
+
+Continuous variables differ from discrete variables in that values are not countable; they can take on any value in some range (i.e., numbers with decimals). Some general examples of continuous values are: expression level, heights and lengths, proportions.
+
+Only one column in the `bee_fertility` data set is a continuous variable:
+- `ITS`: intertegular span
+
+*Identifiers*
+
+Most datasets you will work with will also have a column with a identifier (ID). A unique identifier is a character value of numbers and/or letters that uniquely defines each sample. These are not classified as categorical, discrete, or continuous. 
+
+There is one identifier in this data set:
+- `beeID`: unique identifier for each female bee
 
 ---
 
-The RNA sequence AUGGCAUUC is 9 bases long and contains 3 codons: AUG, GCA, and UUC. How could we write a function to extract codons from an RNA sequence?
-
-The function "get_codons" will take a single argument "RNA_seq" that is a character value containing an RNA sequence. It will return a character vector with each of the codons as an element. To collect the codons, we can start our function with an empty vector "codons" that will be returned at the end of the function.
-
-To get each codon, we will need the function to go through the RNA sequence and extract bases 1-3, 4-6, 7-9, etc. until the end of the RNA sequence is reached. To do this we can set up a while loop to extract the codons and add them to the vector.
-
-Reminder: `substr()` will extract the letters in a character value from a start position to an end position:
-
-```{r}
-get_codons <- function(RNA_seq) {
-# Return a vector of codons from an RNA sequence
-  codons <- c()
-  b1 <- 1
-  b3 <- 3
-  while (b3 <= nchar(RNA_seq)) {
-    codons <- c(codons, substr(RNA_seq, b1, b3))
-    b1 <- b1 + 3
-    b3 <- b3 + 3
-  }
-  return(codons)
-}
-```
-
-AUGGCAUUC is 9 bases long and contains 3 codons: AUG, GCA, and UUC. Does the function work?
-
-```{r}
-get_codons("AUGGCAUUC")
-```
-
-This is called *function testing*: providing arguments for which we know the expected outcome and checking that the return value is correct. Above we gave it an RNA sequence and checked if the three codons it contained were returned as expected.
-
-It's also important to check how a function behaves with unexpected input. What if we used the function on an RNA sequence with a length that is not a multiple of three?
-
-The sequence AUGCCUGAUCGAU is 13 bases long. It contains 4 full codons: AUG, CCU, GAU, and CGA, as well as a partial codon at then end: U.
-
-```{r}
-get_codons("AUGCCUGAUCGAU")
-```
-
-The 4 full codons are returned, but the final U is not returned. This is because the while loop works with sets of three letters.
-
-What if we give our function a character value that isn't an RNA sequence? 
-
-```{r}
-get_codons("HELLOWORLD")
-```
-
-It returns each three letter subsequence within the character value. Our function does not have the information to know whether the argument is an RNA sequence and thus will treat all character values as RNA sequences. 
+## 7.2.2 Plot Types & 7.2.3 The ggplot2 Package
 
 ---
 
-### Warning Messages
-
-R outputs a *warning message* when a piece of code runs, but there is a condition that may cause a problem. For example, in the code below, the number 1 was put in row 4 column 2 because it ran out of numbers in `1:7`.
-
-```{r}
-matrix(1:7, ncol=2)
-```
-
-We can also issue warnings from functions that we create. Our function `get_codons()` returns all full codons in an RNA sequence, but does not output any extra bases at the end. We can issue a warning in our function to alert the user about the output. 
-
-A warning is issued with the `warning()` function. It takes a warning message as an argument. A warning message does NOT stop the rest of the function from running, it only informs the user that something may be wrong.
-
-How can we issue the warning in our `get_codons()` function? We will need to issue the warning any time the number of bases in the RNA sequence is not divisible by three. 
-
-The modulo operator (`%%`) returns the remainder after division. If a number N is divisible by three, then `N %% 3 == 0` since there is no remainder.
-
-At the beginning of the function, we can check if the number of bases is divisible by three, and if not, output the warning: "number of bases in RNA_seq is not a multiple of 3; only full codons are returned":
-
-```{r}
-get_codons <- function(RNA_seq) {
-# Return a vector of codons from an RNA sequence
-  if (nchar(RNA_seq) %% 3 != 0) {
-    warning("number of bases in RNA_seq is not a multiple of 3; only full codons are returned")
-  }
-  codons <- c()
-  b1 <- 1
-  b3 <- 3
-  while (b3 <= nchar(RNA_seq)) {
-    codons <- c(codons, substr(RNA_seq, b1, b3))
-    b1 <- b1 + 3
-    b3 <- b3 + 3
-  }
-  return(codons)
-}
-```
-
-Now let's test the function on an RNA sequence with 13 bases:
-
-```{r}
-get_codons("AUGCCUGAUCGAU") 
-```
-
-The four full codons are returned along with the warning message.
-
-Note that the warning messages in R Markdown may appear in a slightly different format to how they were presented in lecture.
+**Note that this section combines the information lecture sections 7.2.2 and 7.2.3**
 
 ---
 
-### Error Messages
+### Introduction to ggplot2
 
-Let's practice writing functions by creating another function. This function will be called "is_RNA_seq" and it will check if a character value "seq" is an RNA sequence. 
+Data visualization is an extremely important aspect of data analysis. While results of calculations and statistical tests are required understand the relationships between features and reach conclusions, plotting data helps us to visualize these relationships. Plots are also required for science communication via writing reports and papers and giving presentations.
 
-The function uses conditional statements to first check if the "seq" argument is a character value. If it is not a character value, the function immediately returns `FALSE` since it cannot be an RNA sequence. 
+The `ggplot2` package provides a set of functions for creating plots in R that give you more control over aspects of the graphical output than you can have using base R plotting functions.
 
-Next, the function splits the character value into individual letters using `strsplit()`. If not all bases are equal to A, C, G, or U, the function returns `FALSE`; otherwise it returns `TRUE`: 
-
-```{r}
-is_RNA_seq <- function(seq) {
-  # The function is_RNA_seq() takes a value "seq" and outputs TRUE if "seq" is
-  # an RNA sequence and FALSE otherwise
-  if (!is.character(seq)) {
-    return(FALSE)
-  }
-  bases <- strsplit(seq, "")[[1]]
-  if (! all(bases == "A" | bases == "C" | bases == "G" | bases == "U")) {
-    return(FALSE)
-  } else {
-    return(TRUE)
-  }
-}
-```
-
-Now that we have created a function we should test it to ensure it outputs the expected logical value.
-
-RNA sequence:
+Let's load the ggplot2 package, which has already been installed on the JupyterHub server:
 
 ```{r}
-is_RNA_seq("AUGCCUGAUCGAU")
+library(ggplot2)
 ```
 
-Partial RNA sequence:
+The `ggplot2` package uses a different syntax from functions we have used before, but shares some similarities with `dyplr`. The general framework is:
+
+    ggplot(data_frame, aes(column_name1, column_name2)) + geom_plot_type()
+    
+Within the first function `ggplot()` we provide the data frame that contains the data we want to plot. The second argument uses the function `aes()` (for "aesthetics"). The first `column_name1` provided to `aes()` has data for the x-axis, and the second `column_name2` provided to `aes()` has data for the y-axis. Finally, we use a `+` to add on a `ggplot2` function that defines the type of plot we want to create.
+
+---
+
+### Bar Plots
+
+A *bar plot* (or bar chart) is used to visualize the distribution of samples across a set of categories (i.e., visualize a categorical variable). A bar is made for each category and the length of the bar visualizes the number (or count) of samples (observations) that belong to the category.
+
+With respect to data frames, a bar plot shows the count of rows in a categorical data frame column that belongs to each of the categories in that column. 
+
+Only one column is required in `aes()` for bar plots because the y-axis is a count which the `geom_bar()` function will determine automatically:
+
+    ggplot(data_frame, aes(categorical_col)) + geom_bar()
+
+For example, the `pesticide` column is a categorical variable: every element in the column is either "treated" or "not treated". We can make a bar plot for this column:
 
 ```{r}
-is_RNA_seq("HELLOACUAGCCGAU")
+ggplot(bee_fertility, aes(pesticide)) + geom_bar()
 ```
 
-DNA sequence:
+The plot shows the count of female bees that were in cages with wildflowers treated with pesticide and the number of bees in cages with wildflowers not treated with pesticide. 
+
+---
+
+### Histograms
+
+A *histogram* is used to visualize the distribution of samples across a discrete or continuous variable. In a histogram, the minimum and maximum value for the variable are used to define a number of equally sized *bins*, and a bar is made for each bin showing how many values fall into that bin.
+
+With respect to data frames, a histogram shows the count of rows in a discrete or continuous data column that falls within each of the bins defined for that column. 
+
+Only one column is required in `aes()` for bar plots because the y-axis is a count which the `geom_histogram()` function will determine automatically:
+
+    ggplot(data_frame, aes(discrete_or_continuous_col)) + geom_histogram(binwidth=NULL)
+
+For example, the `total.offspring` column is a discrete variable. We can make a histogram with this column:
 
 ```{r}
-is_RNA_seq("ATACTCAGGCTA")
+ggplot(bee_fertility, aes(total.offspring)) + geom_histogram()
 ```
+Notice that there was a warning at the top of our plot: "`stat_bin()` using `bins = 30`. Pick better value with `binwidth`."
 
-Numeric value: 
+It is warning us to pick a better *bin width*. The `geom_histogram()` function binned our data into 30 bins. To determine the current bin width for each of these 30 bins, we can calculate:
 
 ```{r}
-is_RNA_seq(17)
+(max(bee_fertility$total.offspring) - min(bee_fertility$total.offspring))/30
 ```
 
-Along with adding warning messages to our functions we can also add *error messages*. 
-A error is thrown with the `stop()` function. It takes an error message as an argument. Unlike a warning, an error DOES stop the rest of the function from running.
-
-Because our `get_codons()` function is intended to be used with RNA sequences, we can use the `is_RNA_seq()` function to check if the `RNA_seq` argument in `get_codons()` is an RNA sequence, and if not we can throw an error:
+This means we have one bin for every 1.8 offspring in our histogram. This does not make much sense for our data since a bee cannot have 1.8 offspring. For discrete variables we should always set `binwidth` to 1 so that there is one bin for each possible value.
 
 ```{r}
-get_codons <- function(RNA_seq) {
-# Return a vector of codons from an RNA sequence
-  if (!is_RNA_seq(RNA_seq)) {
-    stop("argument provided is not an RNA sequence")
-  }
-  if (nchar(RNA_seq) %% 3 != 0) {
-    warning("number of bases in RNA_seq is not a multiple of 3; only full codons are returned")
-  }
-  codons <- c()
-  b1 <- 1
-  b3 <- 3
-  while (b3 <= nchar(RNA_seq)) {
-    codons <- c(codons, substr(RNA_seq, b1, b3))
-    b1 <- b1 + 3
-    b3 <- b3 + 3
-  }
-  return(codons)
-}
+ggplot(bee_fertility, aes(total.offspring)) + geom_histogram(binwidth = 1)
 ```
 
-Let's test our final `get_codons()` function.
-
-Non-RNA sequence:
+We can also make a histogram for the continuous value `ITS` which is a measurement of the length of the bee between the base of its wings. The values range from 0.263 to 0.359 centimetres. For a more detailed plot we can pick a bin width of 0.005:
 
 ```{r}
-get_codons("HELLOWORLD")
+ggplot(bee_fertility, aes(ITS)) + geom_histogram(binwidth = 0.005)
 ```
 
-RNA sequence with an incomplete codon:
+Or, if we pick a larger bin width of 0.01, we can get a more general idea of the `ITS` distribution:
 
 ```{r}
-get_codons("AUGCGAGUAUCGG")
+ggplot(bee_fertility, aes(ITS)) + geom_histogram(binwidth = 0.01)
 ```
 
-RNA sequence with complete codons:
+---
+
+### Scatter Plots
+
+*Scatter plots* are used to visualize the relationship between two numeric variables. The variables can be either discrete or continuous. In a scatter plot, a point is made on the plot for each sample (observation) showing the value of one variable along the x-axis and the value of the other variable along the y-axis.
+
+Two data frame columns are required in `aes()` for scatter plots:
+
+    ggplot(data_frame, aes(discrete_or_continuous_col1, discrete_or_continuous_col2)) + geom_point()
+    
+Let's examine the relationship between the number of offspring produced by the bees and the number of days spent nesting. Both are discrete variables.
 
 ```{r}
-get_codons("AUGCGAUAUCGG")
+ggplot(bee_fertility, aes(total.offspring, total.nesting.days)) + geom_point()
+``` 
+
+We can see that these two variables, the number of offspring and the number of nesting days, look like they are correlated. When we are looking at the relationship between two continuous or discrete variables, the standard statistical test is the *Pearson correlation*, which can be calculated using the `cor()` function:
+
+```{r}
+cor(bee_fertility$total.offspring, bee_fertility$total.nesting.days)
 ```
+
+---
+
+### Box Plots
+
+*Box plots* are used to visualize the relationship between a categorical variable and a continuous or discrete variable. There is one box for each category in the categorical variable along the x-axis, and the distribution of the continuous or discrete variable is shown via a box and whiskers along the y-axis based on a five point summary. 
+
+Before we take a closer look at what a box represents, let's view an example box plot. 
+
+Two columns are required in `aes()` for box plots: `geom_boxplot()`:
+
+    ggplot(data_frame, aes(categorical_col, discrete_or_continuous_col)) + geom_boxplot()
+    
+Let's examine the distribution of the number of offspring produced by bees that were in cages not treated with pesticides vs. the number of offspring produced by bees in cages with pesticide treated flowers:
+
+```{r}
+ggplot(bee_fertility, aes(pesticide, total.offspring)) + geom_boxplot()
+```
+
+On the x-axis we have the two categories ("not treated" & "treated") and we can see the distribution of the number of offspring along the y-axis represented by boxes.
+
+To understand what the boxes represent, first we should review the following definitions:
+- *First Quartile*: the value in a set of observations which 25% of all values fall below.
+- *Third Quartile*: the value in a set of observations which 75% of all values fall below.
+- *Interquartile Range* (IQR): the magnitude of the difference between the first and third quartiles.
+
+Box Features:
+- The mid line of the box indicates the median value of the distribution. 
+- The bottom and top of the box indicate the first and third quartiles respectively. 
+- The lower whisker starts at the minimum value that is greater than or equal to:
+    `first quartile - 1.5 x IQR`
+- The upper whisker ends at the maximum value that is less than or equal to:
+    `third quartile + 1.5 x IQR`
+- Values outside of the whiskers are considered *outliers* and are represented by points.
+
+Remember that we can get many of these values for a vector using the `summary()` function:
+
+```{r}
+summary(bee_fertility %>% filter(pesticide == "treated") %>% select(total.offspring))
+```
+
+If we look back at the plot above, it appears that the median number of offspring produced by female bees in the absence of pesticides is much higher than in the presence of pesticides.
+
+To compare the distribution of a continuous or discrete variable between two categories, the standard statistical test is a *t-test*, which can be calculated with the `t.test()` function:
+
+```{r}
+t.test(bee_fertility %>% filter(pesticide == "treated") %>% select(total.offspring),
+       bee_fertility %>% filter(pesticide == "not treated") %>% select(total.offspring))
+```
+
+The p-value is significant, leading to the conclusion that pesticides negatively affect the reproductive capability of female bees.
+
+---
+
+## 7.2.4 Adding Dimensions
+
+---
+
+### Visualizing Two Categorical Variables
+
+To visualize counts for a single categorical variable we can use a bar plot. To visualize counts across two categorical variables we can use a stacked bar plot or a side-by-side bar plot. 
+
+In the stacked bar plot, the height of the bar indicates how many samples are in the primary category, and colour indicates how many are in each of the categories of the secondary categorical variable. 
+
+How do we do this ggplot? The `aes()` function has an optional argument called `fill` which takes the name of a categorical column and fills sections of the bar plot with different colours accordingly:
+
+    ggplot(data_frame, aes(categorical_col1, fill=categorical_col2)) + geom_bar()
+
+Let's remake a bar plot of the pesticide variable, but change the fill colour to the categorical variable "resources":
+
+```{r}
+ggplot(bee_fertility, aes(pesticide, fill=resources)) + geom_bar()
+```
+
+We can see that in place of the gray bars are two bars that are each split into two parts to indicate how much of each bar belongs to the secondary category ("resources").
+
+The same information can be displayed side-by-side instead of stacked. Each of the categories for the primary categorical variable will have a bar for each of the categories in the secondary categorical variable.
+
+The `geom_bar()` function has an argument called `position` with a default value of "stack". If it is changed to "dodge", it will create a side-by-side two-category bar plot: 
+
+    ggplot(data.frame, aes(categorical_col1, fill=categorical_col2)) + geom_bar(position="dodge")
+
+```{r}
+ggplot(bee_fertility, aes(pesticide, fill=resources)) + geom_bar(position="dodge")
+```
+
+---
+
+### Adding Categories to Scatter & Box Plots
+
+We can also add an extra categorical variable to a box plot using the fill argument: 
+
+    ggplot(data_frame, aes(categorical_col, continuous_or_discrete_col, fill=categorical_col)) + geom_boxplot()
+
+Let's make a box plot that shows the distribution of total offspring across the pesticide and resource categories:
+
+```{r}
+ggplot(bee_fertility, aes(pesticide, total.offspring, fill=resources)) + geom_boxplot()
+```
+
+We can see that there are two boxes for each of the pesticide categories (primary categorical variable), one for each of the resource categories (secondary categorical variable). 
+
+Viewing the distributions of the pesticide treated samples with high and low resources, we can see that the amount of resources had little affect on the number of offspring female bees produced. 
+
+However, when we look at the samples not treated with pesticides, we see a large difference in the distributions between bees with high and low resources. The median number of offspring produced by female bees with low food resources is nearly 10 counts lower than the the median number of offspring produced by female bees with high food resources.
+
+---
+
+Scatter plots do not have a box or bar to fill using a categorical variable. However, we can change the colour of the individual points based on a categorical variable. This is done with the "colour" argument in the `aes()` function:
+    
+    ggplot(data_frame, aes(continuous_or_discrete_col, continuous_or_discrete_col, colour=categorical_col)) + geom_point()
+    
+Let's colour a scatter plot of total nesting days vs. total offspring using the pesticide categories:
+
+```{r}
+ggplot(bee_fertility, aes(total.offspring, total.nesting.days, color=pesticide)) + geom_point()
+```
+
+It is not always easy to see trends in this type of plot, however we can see that there are more blue "treated" dots in the bottom left hand corner and more pink/red "not treated" dots in the top right hand corner. This suggests that the pesticide-treated samples tended to have lower numbers of nesting days and offspring.
+
+---
+
+## 7.2.5 Plot Formatting
+
+---
+
+### Labels & Axes
+
+It is good practice to have a plot title describing the data in the plot, and to have axis and legend labels that clearly describe the variables. 
+
+The ggplot package has the `labs()` function for adding labels: 
+
+    ggplot(...) + geom_plot_type(...) + labs(title=", x="", y="", fill="", colour="")
+
+Titles are added with the `title` argument, and x and y axis labels with the `x` and `y` arguments. 
+
+Legend labels can be added using the `fill` and `colour` arguments. These arguments will only work if you have used the `aes()` `fill` or `colour` arguments.
+
+For example:
+
+```{r}
+ggplot(bee_fertility, aes(pesticide, fill=resources)) + 
+    geom_bar(position="dodge") + 
+    labs(title="Number of Female Bees Per Condition", 
+         x="Pesticide Exposure", y="Number of Bees", 
+         fill="Food Resources")
+```
+
+Looking at this plot with the more descriptive labels, it is easier to see how many bees were under each condition in the experiment, and to understand what the conditions were.
+
+We can also change the formatting of plots by altering the axis limits. The axis limits are the minimum and maximum values of the axes. This is done with functions `xlim()` and `ylim()`, each of which take a vector of length two as an argument, detailing where the axis should start and end: 
+
+    ggplot(...) + geom_plot_type(…) + xlim(c(start, end)) + ylim(c(start, end))
+
+How can we use these functions to create a plot that shows the number of offspring for bees with fewer than 20 nesting days? If we put `total.nesting.days` on the y-axis and we only want to show the days from 0 to 20, we can alter the range of the axis with the `ylim()` function:
+
+```{r}
+ggplot(bee_fertility, aes(total.offspring, total.nesting.days)) + 
+    geom_point() + 
+    ylim(c(0,20)) + 
+    labs(title="Number of Offspring for Bees with < 20 Nesting Days")
+```
+
+---
+
+### Formatting Scatter Plots
+
+The clarity of scatter plots can be improved by changing the appearance of the plot points. As points can often overlap, we can alter the opacity of the points using the `alpha` argument in `geom_point()`. The size of points can also be altered with the `size` argument: 
+
+    ggplot(...) + geom_point(alpha=1, size=1.5)
+
+`alpha` must be between 0 and 1 (0 is invisible, 1 is opaque/solid)
+`size` has a lower limit of 0 
+
+First let's recreate the plot showing the total nesting days vs. the total number of offspring for each bee coloured by the resources category to see how it looks without any other formatting:
+
+```{r}
+ggplot(bee_fertility, aes(total.offspring, total.nesting.days, colour=resources)) + 
+    geom_point()
+```
+
+Now let's change the opacity and size of the points by setting `alpha` to 0.5 and `size` to 3.
+
+```{r}
+ggplot(bee_fertility, aes(total.offspring, total.nesting.days, colour=resources)) + 
+    geom_point(alpha=0.5, size=3)
+```
+
+We can see that the points are much larger, but we can now also see that in the bottom left-hand corner there are many overlapping points at coordinate `0,0`, which would not have been evident if the points were fully opaque - we would only see the point on top.
+
+There are many other functions and techniques for altering the formatting of a plot made with the `ggplot2` package. Check out the following links to learn more:
+
+https://ggplot2.tidyverse.org/
+https://github.com/rstudio/cheatsheets/blob/main/data-visualization-2.1.pdf
+
+---
+
+### Saving Plots
+
+Plots you create can be saved as a PDF, PNG, JPEG, or other graphics file (ex. TIFF). Each of these have their own function:
+- Save a PDF: `pdf(filename, width=7, height=7)`
+- Save a PNG: `png(filename, width=480, height=480)`
+- Save a JPEG: `jpeg(filename, width=480, height=480)`
+
+Each takes a file name and optional width and height arguments. PDF width and height values are in inches, whereas PNG and JPEG width and height values are in pixels. 
+
+How are these functions used? First, the plot you want to write to a file must be saved to a variable. Then use the function for the type of plot you would like to create, print the variable containing the plot, and finally call the function `dev.off()` which closes the graphics device after the plot is written to the file:
+
+    plot_variable <- ggplot(...) + ...
+    pdf(...)
+    print(plot_variable)
+    dev.off()
+    
+For example, we can write a scatter plot to a PDF file:
+
+```{r}
+g <- ggplot(bee_fertility, aes(total.offspring, total.nesting.days)) + geom_point()
+pdf("bee_fertility_offspring_vs_nesting_days.pdf", width=5, height=5)
+print(g)
+dev.off()
+```
+
+All we see as output is `null device 1`, which indicates the graphics device was closed properly. If you look in your current working directory you should now see a file called `bee_fertility_offspring_vs_nesting_days.pdf`. 
+
+You can use relative or absolute paths in the `filename` argument to save your plot to different directories as needed.
 
 ---
