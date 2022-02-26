@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE, message = TRUE,
 
 ---
 
-## 7.1.1: Function Creation Basics
+## 7.1.1 Function Creation Basics
 
 ---
 
@@ -25,7 +25,7 @@ Functions:
     function_name(arguments)
     [1] return_value
 
-We have been using several built-in functions throughout the course. Although built-in functions are able to perform many of the tasks we need in data analysis, there will be times when there is no existing function for the task you must perform. In these situations you will need to write your owncode to perform the task. If it is a task you will need to perform many times, instead of copying and pasting your code you can write a function. 
+We have been using several built-in functions throughout the course. Although built-in functions are able to perform many of the tasks we need in data analysis, there will be times when there is no existing function for the task you must perform. In these situations you will need to write your own code to perform the task. If it is a task you will need to perform many times, instead of copying and pasting your code you can write a function. 
 
 To create your a function in R, we use the `function()` function, which has the following syntax:
 
@@ -34,7 +34,7 @@ To create your a function in R, we use the `function()` function, which has the 
       return(return_value)
     }
 
-To a function name, you assign the output of the `function()` function. You can provide arguments, write the necessary code to carry out the task that the function will perform, and then return the value the function produces using the `return()` function.
+When writing your own function, the variable name becomes the name of your function, and you assign the output of the `function()` function. You can provide arguments, write the necessary code to carry out the task that the function will perform, and then return the value the function produces using the `return()` function.
 
 Important notes about creating functions:
 - Function names and argument names should be descriptive
@@ -51,7 +51,7 @@ We will call our function "my_mean_function" and it will take one argument `x`, 
 
 To calculate the mean of a numeric vector, we need to calculate the sum of all the numbers in the vector, which we can do with the `sum()` function, and divide it by the number of elements, which we can determine with the `length()` function. Existing built-in functions or functions you have already created can be used within other functions.
 
-The last line of the function should return the mean of the vector `x`. To do this we place the variable containing the mean within the `return()` function:
+The last line of the function should return the mean of the vector `x`. To do this we place the variable containing the mean within the `return()` function.
 
 ```{r}
 my_mean_function <- function(x) {
@@ -77,7 +77,7 @@ It throws an error. This is because variables assigned *within* a function do no
 
 ---
 
-## 7.1.2: Function Arguments
+## 7.1.2 Function Arguments
 
 ---
 
@@ -108,7 +108,7 @@ We will write a function to determine the percentage of genes expressed given a 
 3. Identify the necessary arguments
     `x`: All values can be derived from the vector of expression values `x`
 
-Now we can write our function. We will name the function "percent_expressed" and our single argument "expr":
+Now we can write our function. We will name the function "percent_expressed" and our single argument "expr".
 
 ```{r}
 percent_expressed <- function(expr) {
@@ -136,7 +136,7 @@ The function `percent_expressed` can be used with any set of expression values. 
 
 We can increase the usefulness of this function by adding a second argument, called "threshold". This argument will be the threshold used to consider a gene expressed. 
 
-The function below is the same as the previous `percent_expressed`, however it now has a second argument and the code `expr > 1` has been replaced with a more generic `expr > threshold`:
+The function below is the same as the previous `percent_expressed`, however it now has a second argument and the code `expr > 1` has been replaced with a more generic `expr > threshold`.
 
 ```{r}
 percent_expressed <- function(expr, threshold) {
@@ -166,7 +166,7 @@ percent_expressed <- function(expr, threshold=1) {
 }
 ```
 
-Now if we run `percent_expressed` without assigning a value to `threshold`, it returns the percentage of genes expressed above one: 
+Now if we run `percent_expressed` without assigning a value to `threshold`, it returns the percentage of genes expressed above one:
 
 ```{r}
 percent_expressed(brain_expression$thalamus)
@@ -180,7 +180,7 @@ percent_expressed(brain_expression$thalamus, 2)
 
 ---
 
-## 7.1.3: Function Testing
+## 7.1.3 Function Testing
 
 ---
 
@@ -190,7 +190,7 @@ The function "get_codons" will take a single argument "RNA_seq" that is a charac
 
 To get each codon, we will need the function to go through the RNA sequence and extract bases 1-3, 4-6, 7-9, etc. until the end of the RNA sequence is reached. To do this we can set up a while loop to extract the codons and add them to the vector.
 
-Reminder: `substr()` will extract the letters in a character value from a start position to an end position:
+Reminder: `substr()` will extract the letters in a character value from a start position to an end position.
 
 ```{r}
 get_codons <- function(RNA_seq) {
@@ -237,7 +237,7 @@ It returns each three letter subsequence within the character value. Our functio
 
 ### Warning Messages
 
-R outputs a *warning message* when a piece of code runs, but there is a condition that may cause a problem. For example, in the code below, the number 1 was put in row 4 column 2 because it ran out of numbers in `1:7`.
+R outputs a *warning message* when a piece of code runs, but there is a condition that may cause a problem. For example, in the code below, the number 1 was put in row 4 column 2 because it ran out of numbers in `1:7`:
 
 ```{r}
 matrix(1:7, ncol=2)
@@ -251,7 +251,7 @@ How can we issue the warning in our `get_codons()` function? We will need to iss
 
 The modulo operator (`%%`) returns the remainder after division. If a number N is divisible by three, then `N %% 3 == 0` since there is no remainder.
 
-At the beginning of the function, we can check if the number of bases is divisible by three, and if not, output the warning: "number of bases in RNA_seq is not a multiple of 3; only full codons are returned":
+At the beginning of the function, we can check if the number of bases is divisible by three, and if not, output the warning: "number of bases in RNA_seq is not a multiple of 3; only full codons are returned".
 
 ```{r}
 get_codons <- function(RNA_seq) {
@@ -285,11 +285,11 @@ Note that the warning messages in R Markdown may appear in a slightly different 
 
 ### Error Messages
 
-Let's practice writing functions by creating another function. This function will be called "is_RNA_seq" and it will check if a character value "seq" is an RNA sequence. 
+Let's practice writing functions by creating another This function will be called "is_RNA_seq" and it will check if a character value "seq" is an RNA sequence. 
 
 The function uses conditional statements to first check if the "seq" argument is a character value. If it is not a character value, the function immediately returns `FALSE` since it cannot be an RNA sequence. 
 
-Next, the function splits the character value into individual letters using `strsplit()`. If not all bases are equal to A, C, G, or U, the function returns `FALSE`; otherwise it returns `TRUE`: 
+Next, the function splits the character value into individual letters using `strsplit()`. If not all bases are equal to A, C, G, or U, the function returns `FALSE`; otherwise it returns `TRUE`.
 
 ```{r}
 is_RNA_seq <- function(seq) {
@@ -333,10 +333,9 @@ Numeric value:
 is_RNA_seq(17)
 ```
 
-Along with adding warning messages to our functions we can also add *error messages*. 
-A error is thrown with the `stop()` function. It takes an error message as an argument. Unlike a warning, an error DOES stop the rest of the function from running.
+Along with adding warning messages to our functions we can also add *error messages*. An error is thrown with the `stop()` function. It takes an error message as an argument. Unlike a warning, an error DOES stop the rest of the function from running.
 
-Because our `get_codons()` function is intended to be used with RNA sequences, we can use the `is_RNA_seq()` function to check if the `RNA_seq` argument in `get_codons()` is an RNA sequence, and if not we can throw an error:
+Because our `get_codons()` function is intended to be used with RNA sequences, we can use the `is_RNA_seq()` function to check if the `RNA_seq` argument in `get_codons()` is an RNA sequence, and if not we can throw an error.
 
 ```{r}
 get_codons <- function(RNA_seq) {
