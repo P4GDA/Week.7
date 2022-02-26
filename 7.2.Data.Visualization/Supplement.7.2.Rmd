@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning = TRUE)
 
 ---
 
-## 7.2.1: Variable Types
+## 7.2.1 Variable Types
 
 ---
 
@@ -152,6 +152,7 @@ For example, the `total.offspring` column is a discrete variable. We can make a 
 ```{r}
 ggplot(bee_fertility, aes(total.offspring)) + geom_histogram()
 ```
+
 Notice that there was a warning at the top of our plot: "`stat_bin()` using `bins = 30`. Pick better value with `binwidth`."
 
 It is warning us to pick a better *bin width*. The `geom_histogram()` function binned our data into 30 bins. To determine the current bin width for each of these 30 bins, we can calculate:
@@ -380,7 +381,7 @@ ggplot(bee_fertility, aes(total.offspring, total.nesting.days, colour=resources)
     geom_point()
 ```
 
-Now let's change the opacity and size of the points by setting `alpha` to 0.5 and `size` to 3.
+Now let's change the opacity and size of the points by setting `alpha` to 0.5 and `size` to 3:
 
 ```{r}
 ggplot(bee_fertility, aes(total.offspring, total.nesting.days, colour=resources)) + 
