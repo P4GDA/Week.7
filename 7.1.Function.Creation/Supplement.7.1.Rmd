@@ -184,7 +184,7 @@ percent_expressed(brain_expression$thalamus, 2)
 
 ---
 
-The RNA sequence AUGGCAUUC is 9 bases long and contains 3 codons: AUG, GCA, and UUC. How could we write a function to extract codons from an RNA sequence?
+The RNA sequence AUGGCAUUC is nine bases long and contains three codons: AUG, GCA, and UUC. How could we write a function to extract codons from an RNA sequence?
 
 The function "get_codons" will take a single argument "RNA_seq" that is a character value containing an RNA sequence. It will return a character vector with each of the codons as an element. To collect the codons, we can start our function with an empty vector "codons" that will be returned at the end of the function.
 
@@ -207,7 +207,7 @@ get_codons <- function(RNA_seq) {
 }
 ```
 
-AUGGCAUUC is 9 bases long and contains 3 codons: AUG, GCA, and UUC. Does the function work?
+AUGGCAUUC is nine bases long and contains three codons: AUG, GCA, and UUC. Does the function work?
 
 ```{r}
 get_codons("AUGGCAUUC")
@@ -217,13 +217,13 @@ This is called *function testing*: providing arguments for which we know the exp
 
 It's also important to check how a function behaves with unexpected input. What if we used the function on an RNA sequence with a length that is not a multiple of three?
 
-The sequence AUGCCUGAUCGAU is 13 bases long. It contains 4 full codons: AUG, CCU, GAU, and CGA, as well as a partial codon at then end: U.
+The sequence AUGCCUGAUCGAU is 13 bases long. It contains four full codons: AUG, CCU, GAU, and CGA, as well as a partial codon at then end: U.
 
 ```{r}
 get_codons("AUGCCUGAUCGAU")
 ```
 
-The 4 full codons are returned, but the final U is not returned. This is because the while loop works with sets of three letters.
+The four full codons are returned, but the final U is not returned. This is because the while loop works with sets of three letters.
 
 What if we give our function a character value that isn't an RNA sequence? 
 
@@ -249,7 +249,7 @@ A warning is issued with the `warning()` function. It takes a warning message as
 
 How can we issue the warning in our `get_codons()` function? We will need to issue the warning any time the number of bases in the RNA sequence is not divisible by three. 
 
-The modulo operator (`%%`) returns the remainder after division. If a number N is divisible by three, then `N %% 3 == 0` since there is no remainder.
+The *modulo operator (`%%`)* returns the remainder after division. If a number N is divisible by three, then `N %% 3 == 0` since there is no remainder.
 
 At the beginning of the function, we can check if the number of bases is divisible by three, and if not, output the warning: "number of bases in RNA_seq is not a multiple of 3; only full codons are returned".
 

@@ -6,9 +6,9 @@ test = list(
       name = NA,
       points = 1.0,
       code = {
-        expect_equal(num.patients.w.mutation("KRAS"), 265)
-        expect_equal(num.patients.w.mutation("KMT2D"), 168)
-        expect_equal(num.patients.w.mutation("BRAF"), 48)
+        expect_equal(num_patients_w_mutation("KRAS"), 265)
+        expect_equal(num_patients_w_mutation("KMT2D"), 168)
+        expect_equal(num_patients_w_mutation("BRAF"), 48)
       }
     )
   )

@@ -6,8 +6,8 @@ test = list(
       name = NA,
       points = 1.0,
       code = {
-        expect_equal(patients.w.N.mutations.2("TP53"), 814)
-        expect_equal(patients.w.N.mutations.2("CDKN2A", 3), 1)
+        expect_equal(patients_w_N_mutations_2("TP53"), 814)
+        expect_equal(patients_w_N_mutations_2("CDKN2A", 3), 1)
       }
     )
   )
